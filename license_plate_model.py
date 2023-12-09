@@ -50,3 +50,12 @@ def get_model_instance_segmentation():
     )
 
     return model
+
+
+if __name__ == "__main__":
+    import pickle
+
+    model = get_model_instance_segmentation()
+
+    with open("license_plate_detection_model-test.pkl", "wb") as p:
+        pickle.dump(model, p)

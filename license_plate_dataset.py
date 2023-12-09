@@ -22,7 +22,13 @@ def _read_label_file(file_path, image_shape):
             x_center = int(float(row[1]) * width)
             y_center = int(float(row[2]) * height)
             label_half_width = int(float(row[3]) * width / 2)
+            label_half_width = (
+                label_half_width if label_half_width > 0 else label_half_width + 1
+            )
             label_half_height = int(float(row[4]) * width / 2)
+            label_half_height = (
+                label_half_height if label_half_height > 0 else label_half_height + 1
+            )
             x1 = x_center - label_half_width
             y1 = y_center - label_half_height
             x2 = x_center + label_half_width
@@ -76,7 +82,7 @@ class LLPDataset(torch.utils.data.Dataset):
 
 
 if __name__ == "__main__":
-    import utils
+    import pytorch_utils.utils
 
     root = "../data/LargeLicensePlateDetectionDataset"
 
@@ -84,7 +90,7 @@ if __name__ == "__main__":
     print(dataset)
 
     data_loader = torch.utils.data.DataLoader(
-        dataset, batch_size=2, shuffle=True, collate_fn=utils.collate_fn
+        dataset, batch_size=2, shuffle=True, collate_fn=pytorch_utils.utils.collate_fn
     )
 
     images, targets = next(iter(data_loader))

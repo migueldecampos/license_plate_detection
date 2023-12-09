@@ -3,10 +3,10 @@ Code adapted from https://pytorch.org/tutorials/intermediate/torchvision_tutoria
 """
 import torch
 
-import engine
+import pytorch_utils.engine
 import license_plate_dataset
 import license_plate_model
-import utils
+import pytorch_utils.utils
 
 
 def train(dataset_root, device, number_of_epochs=1):
@@ -23,7 +23,7 @@ def train(dataset_root, device, number_of_epochs=1):
         batch_size=4,
         shuffle=True,
         num_workers=4,
-        collate_fn=utils.collate_fn,
+        collate_fn=pytorch_utils.utils.collate_fn,
     )
 
     data_loader_test = torch.utils.data.DataLoader(
@@ -31,7 +31,7 @@ def train(dataset_root, device, number_of_epochs=1):
         batch_size=1,
         shuffle=False,
         num_workers=4,
-        collate_fn=utils.collate_fn,
+        collate_fn=pytorch_utils.utils.collate_fn,
     )
 
     # get the model using our helper function
@@ -50,13 +50,13 @@ def train(dataset_root, device, number_of_epochs=1):
     # let's train
     for epoch in range(number_of_epochs):
         # train for one epoch, printing every 10 iterations
-        engine.train_one_epoch(
+        pytorch_utils.engine.train_one_epoch(
             model, optimizer, data_loader, device, epoch, print_freq=10
         )
         # update the learning rate
         lr_scheduler.step()
         # evaluate on the test dataset
-        engine.evaluate(model, data_loader_test, device=device)
+        pytorch_utils.engine.evaluate(model, data_loader_test, device=device)
 
     return model
 

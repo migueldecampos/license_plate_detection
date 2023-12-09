@@ -7,17 +7,19 @@ import time
 
 import torch
 import torchvision.models.detection.mask_rcnn
-import utils
-from coco_eval import CocoEvaluator
-from coco_utils import get_coco_api_from_dataset
+import pytorch_utils.utils
+from pytorch_utils.coco_eval import CocoEvaluator
+from pytorch_utils.coco_utils import get_coco_api_from_dataset
 
 
 def train_one_epoch(
     model, optimizer, data_loader, device, epoch, print_freq, scaler=None
 ):
     model.train()
-    metric_logger = utils.MetricLogger(delimiter="  ")
-    metric_logger.add_meter("lr", utils.SmoothedValue(window_size=1, fmt="{value:.6f}"))
+    metric_logger = pytorch_utils.utils.MetricLogger(delimiter="  ")
+    metric_logger.add_meter(
+        "lr", pytorch_utils.utils.SmoothedValue(window_size=1, fmt="{value:.6f}")
+    )
     header = f"Epoch: [{epoch}]"
 
     lr_scheduler = None
@@ -43,7 +45,7 @@ def train_one_epoch(
             losses = sum(loss for loss in loss_dict.values())
 
         # reduce losses over all GPUs for logging purposes
-        loss_dict_reduced = utils.reduce_dict(loss_dict)
+        loss_dict_reduced = pytorch_utils.utils.reduce_dict(loss_dict)
         losses_reduced = sum(loss for loss in loss_dict_reduced.values())
 
         loss_value = losses_reduced.item()
