@@ -1,25 +1,7 @@
 """
 Code adapted from https://pytorch.org/tutorials/intermediate/torchvision_tutorial.html.
 """
-
 import torchvision
-
-
-def instantiate_license_plate_model():
-    # load a model pre-trained on COCO
-    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights="DEFAULT")
-
-    # replace the classifier with a new one, that has
-    # num_classes which is user-defined
-    num_classes = 2  # 1 class (license plate) + background
-    # get number of input features for the classifier
-    in_features = model.roi_heads.box_predictor.cls_score.in_features
-    # replace the pre-trained head with a new one
-    model.roi_heads.box_predictor = (
-        torchvision.models.detection.faster_rcnn.FastRCNNPredictor(
-            in_features, num_classes
-        )
-    )
 
 
 def get_model_instance_segmentation():
