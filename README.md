@@ -5,13 +5,32 @@ This repo contains a PyTorch finetuning script for a Mask R-CNN model with a Res
 
 
 ## How to use
-- Download [dataset](https://www.kaggle.com/datasets/fareselmenshawii/large-license-plate-dataset/data)
 - ``` pip install -r requirements.txt```
+#### Training:
+- Download [dataset](https://www.kaggle.com/datasets/fareselmenshawii/large-license-plate-dataset/data)
 - Clean dataset using ```dataset_scripts/clean_dataset.py ```
 - ```python train.py```
+#### Inference:
+- ```python inference.py <path to model pickle file> <path to image>```
 
 ## Results
-_coming soon_
+Original Image:
+![Original](examples/parked_cars.jpg)
+Detection:
+![detection](examples/parked_cars_output.jpg)
+
+
+Original Image:
+![Original](examples/traffic1.jpg)
+Detection:
+![detection](examples/traffic1_output.jpg)
+
+
+Original Image:
+![Original](examples/traffic2.jpg)
+Detection:
+![detection](examples/traffic2_output.jpg)
+
 
 
 ## References
