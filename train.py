@@ -87,10 +87,10 @@ if __name__ == "__main__":
         dataset_root="../data/LargeLicensePlateDetectionDataset",
         device=device,
         number_of_epochs=1,
-        checkpoint_freq=50,
+        checkpoint_freq=250,
         checkpoint_path=os.path.abspath("./license_plate_detection_model"),
-        epoch_size=10,
-        test_size=5,
+        epoch_size=None,
+        test_size=None,
     )
 
     print(model)
