@@ -73,7 +73,12 @@ class LLPDataset(torch.utils.data.Dataset):
         masks = torch.stack(masks)
         masks = tv_tensors.Mask(masks)
 
-        target = {"boxes": boxes, "labels": labels, "masks": masks}
+        target = {
+            "boxes": boxes,
+            "labels": labels,
+            "masks": masks,
+            "image_id": self.imgs[idx],
+        }
 
         return img, target
 

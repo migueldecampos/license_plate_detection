@@ -2,6 +2,7 @@
 Copied from https://raw.githubusercontent.com/pytorch/vision/main/references/detection/engine.py.
 """
 import math
+import pickle
 import sys
 import time
 
@@ -13,7 +14,15 @@ from pytorch_utils.coco_utils import get_coco_api_from_dataset
 
 
 def train_one_epoch(
-    model, optimizer, data_loader, device, epoch, print_freq, scaler=None
+    model,
+    optimizer,
+    data_loader,
+    device,
+    epoch,
+    print_freq,
+    checkpoint_freq,
+    checkpoint_path,
+    scaler=None,
 ):
     model.train()
     metric_logger = pytorch_utils.utils.MetricLogger(delimiter="  ")
@@ -31,6 +40,7 @@ def train_one_epoch(
             optimizer, start_factor=warmup_factor, total_iters=warmup_iters
         )
 
+    step = 0
     for images, targets in metric_logger.log_every(data_loader, print_freq, header):
         images = list(image.to(device) for image in images)
         targets = [
@@ -64,11 +74,19 @@ def train_one_epoch(
             losses.backward()
             optimizer.step()
 
+        if step % checkpoint_freq == 0:
+            with open(checkpoint_path + "_{}_{}.pkl".format(epoch, step), "wb") as p:
+                pickle.dump(model, p)
+
         if lr_scheduler is not None:
             lr_scheduler.step()
 
         metric_logger.update(loss=losses_reduced, **loss_dict_reduced)
         metric_logger.update(lr=optimizer.param_groups[0]["lr"])
+        step += 1
+
+    with open(checkpoint_path + "_final.pkl", "wb") as p:
+        pickle.dump(model, p)
 
     return metric_logger
 
