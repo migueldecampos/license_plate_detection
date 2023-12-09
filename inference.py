@@ -33,4 +33,4 @@ def get_license_plate_boxes(model, image):
             else:
                 break
 
-    return torch.stack(boxes)
+    return torch.stack(boxes) if boxes else torch.zeros((0, 4))
