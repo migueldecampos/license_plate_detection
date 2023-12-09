@@ -2,7 +2,7 @@ import torch
 import torchvision
 
 
-SCORE_CUTOFF = 0.8
+SCORE_CUTOFF = 0.7
 
 
 def open_image(image_path):
@@ -34,3 +34,40 @@ def get_license_plate_boxes(model, image):
                 break
 
     return torch.stack(boxes) if boxes else torch.zeros((0, 4))
+
+
+if __name__ == "__main__":
+    import pickle
+    import sys
+
+    if len(sys.argv) == 3:
+        with open(sys.argv[1], "rb") as p:
+            model = pickle.load(p)
+        image_path = sys.argv[2]
+        image = torchvision.io.read_image(image_path)
+        boxes = get_license_plate_boxes(model, image)
+        colors = [
+            "blue",
+            "yellow",
+            "red",
+            "orange",
+            "pink",
+            "black",
+            "green",
+            "brown",
+            "gold",
+            "gray",
+            "lime",
+            "magenta",
+            "olive",
+            "violet",
+            "cyan",
+            "navy",
+        ]
+        output = torchvision.utils.draw_bounding_boxes(
+            image, boxes, colors=colors, width=3
+        )
+        output_path = image_path[:-4] + "_output.jpg"
+        torchvision.io.write_jpeg(output, output_path)
+    else:
+        print("python inference.py <path to model pickle file> <path to image>")
