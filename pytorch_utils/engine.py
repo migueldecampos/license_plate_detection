@@ -5,6 +5,7 @@ import math
 import pickle
 import sys
 import time
+import json
 
 import torch
 import torchvision.models.detection.mask_rcnn
@@ -66,6 +67,9 @@ def train_one_epoch(
             print()
         # reduce losses over all GPUs for logging purposes
         loss_dict_reduced = pytorch_utils.utils.reduce_dict(loss_dict)
+        loss_dict_reduced_python_types = {
+            key: value.item() for key, value in loss_dict_reduced.items()
+        }
         losses_reduced = sum(loss for loss in loss_dict_reduced.values())
 
         loss_value = losses_reduced.item()
@@ -88,7 +92,8 @@ def train_one_epoch(
         if step % checkpoint_freq == 0:
             with open(checkpoint_path + "_{}_{}.pkl".format(epoch, step), "wb") as p:
                 pickle.dump(model, p)
-
+            with open(checkpoint_path + "_{}_{}.json".format(epoch, step), "w") as f:
+                json.dump(loss_dict_reduced_python_types, f)
         if lr_scheduler is not None:
             lr_scheduler.step()
 
