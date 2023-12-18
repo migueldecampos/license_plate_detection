@@ -42,6 +42,9 @@ def train_one_epoch(
 
     step = 0
     for images, targets in metric_logger.log_every(data_loader, print_freq, header):
+        image_ids = list()
+        for target_dict in targets:
+            image_ids.append(target_dict["image_id"])
         images = list(image.to(device) for image in images)
         targets = [
             {
@@ -50,10 +53,17 @@ def train_one_epoch(
             }
             for t in targets
         ]
-        with torch.cuda.amp.autocast(enabled=scaler is not None):
-            loss_dict = model(images, targets)
-            losses = sum(loss for loss in loss_dict.values())
-
+        error_occured = False
+        try:
+            with torch.cuda.amp.autocast(enabled=scaler is not None):
+                loss_dict = model(images, targets)
+                losses = sum(loss for loss in loss_dict.values())
+        except Exception as e:
+            error_occured = True
+            print("ERROR!")
+            print(e)
+            print("image_ids:", image_ids)
+            print()
         # reduce losses over all GPUs for logging purposes
         loss_dict_reduced = pytorch_utils.utils.reduce_dict(loss_dict)
         losses_reduced = sum(loss for loss in loss_dict_reduced.values())
@@ -66,13 +76,14 @@ def train_one_epoch(
             sys.exit(1)
 
         optimizer.zero_grad()
-        if scaler is not None:
-            scaler.scale(losses).backward()
-            scaler.step(optimizer)
-            scaler.update()
-        else:
-            losses.backward()
-            optimizer.step()
+        if not error_occured:
+            if scaler is not None:
+                scaler.scale(losses).backward()
+                scaler.step(optimizer)
+                scaler.update()
+            else:
+                losses.backward()
+                optimizer.step()
 
         if step % checkpoint_freq == 0:
             with open(checkpoint_path + "_{}_{}.pkl".format(epoch, step), "wb") as p:
