@@ -101,7 +101,7 @@ def train_one_epoch(
         metric_logger.update(lr=optimizer.param_groups[0]["lr"])
         step += 1
 
-    with open(checkpoint_path + "_final.pkl", "wb") as p:
+    with open(checkpoint_path + "_{}_final.pkl".format(epoch), "wb") as p:
         pickle.dump(model, p)
 
     return metric_logger
